@@ -1,0 +1,329 @@
+Stack Exchange Inbox Reputation and Badges  1 1  help  
+
+Search Q&A
+
+Stack Overflow
+Questions
+ 
+Jobs
+ 
+Documentation 
+ 
+Tags
+ 
+Users
+ 
+Badges
+ 
+Ask Question
+Should I put pyc files under version control?
+
+up vote
+5
+down vote
+favorite
+I forked a GitHub project in Python. After running the project for the first time, some .pyc files appeared inside. Should I put them under version control and commit them to my fork?
+
+python version-control
+shareedit
+asked Aug 20 '15 at 5:25
+
+Erel Segal-Halevi
+6,252124789
+4	 	
+NO! ............ – William Pursell Aug 20 '15 at 5:26
+1	 	
+No, it is "byte compiled" versions of the same code. See stackoverflow.com/questions/3878479/… – Jordfräs Aug 20 '15 at 5:27
+  	 	
+Most sources suggest not to, as it can create extra work before committing, and often results in the committing of new source code, but old compiled code. source 1, source 2 – Addison Aug 20 '15 at 5:29 
+  	 	
+That's somewhat a matter of opinion. However it's customary not to add source control to files that are created during the build process (and consequently is created from the other files in source control), .pyc files is among these. Instead you could add *.pyc to .gitignore and (maybe - this is also a matter of opinion) put .gitignore under source control. – skyking Aug 20 '15 at 6:04
+1	 	
+@skyking why wouldn't you put .gitignore under source control? – ganduG Aug 20 '15 at 6:30
+show 4 more comments
+4 Answers
+active oldest votes
+up vote
+1
+down vote
+There isn't anything bad about the file, but it's useless junk, it's there only to speed up python application execution, and it's rebuilt every time you make changes, so it will just grow over time, to fix it you might want to add __pycache__ line to your .gitignore file
+
+shareedit
+answered Aug 20 '15 at 5:51
+
+Aleksandr Tihomirov
+265
+add a comment
+up vote
+1
+down vote
+Not necessary to do that.
+
+There are a great collection of gitignore files for almost all platforms. You can use this one for your python projects:
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# PyInstaller
+#  Usually these files are written by a python script from a template
+#  before PyInstaller builds the exe, so as to inject date/other infos into it.
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*,cover
+
+# Translations
+*.mo
+*.pot
+
+# Django stuff:
+*.log
+
+# Sphinx documentation
+docs/_build/
+
+# PyBuilder
+target/
+shareedit
+answered Aug 20 '15 at 6:08
+
+svfat
+820318
+  	 	
+Personally, I'd much prefer to ignore files as needed than check in a bunch of ignore patterns that aren't actually used. – dimo414 Aug 20 '15 at 12:40
+add a comment
+up vote
+1
+down vote
+These files are compiled versions of the code already in the repo, so that Python can execute the code faster. Since they are a direct computational result of the actual source code there's no benefit to checking them in - they'd just need to be updated every time the source code was updated. Also, there's no guarantee (to my knowledge) that different machines or versions of Python will generate compatible .pyc files, meaning distributing the .pyc files you generated could potentially break other people's environments.
+
+Instead you could fix the .gitignore file to ignore .pyc files and commit that to your fork (or even back to the upstream repo). That way no one will notice or need to worry about these files in the future.
+
+shareedit
+answered Aug 20 '15 at 5:38
+
+dimo414
+21.8k779123
+add a comment
+up vote
+0
+down vote
+No. You must do not put pyc under version-control
+
+Common rule is "Never put build-arifacts into source control, because you have sources in source-control and can|have to repeat process"
+
+PYCs are such artifacts for corresponding PY files
+
+shareedit
+answered Aug 21 '15 at 4:29
+
+Lazy Badger
+1
+add a comment
+Your Answer
+
+Links Images Styling/Headers Lists Blockquotes Code HTML advanced help »
+
+ 
+Post Your Answer
+Not the answer you're looking for?	Browse other questions tagged python version-control or ask your own question.
+
+asked
+
+1 year ago
+
+viewed
+
+1016 times
+
+active
+
+1 year ago
+
+BLOG
+Women in the 2016 Stack Overflow Survey
+FEATURED ON META
+Phase Two of Top Navigation Testing Begins Soon!
+HOT META POSTS
+13 Merging accounts - 4 days, no replies or emails
+17 Please blacklist the [jasperviewer] & [jasperprint] tags
+Want a python job?
+Sr Product Analyst (Community Tech)
+Wikimedia FoundationSan Francisco, CA
+REMOTE
+pythonhive
+Python Developer - Build the smartest way to buy a car (Telecommute - full time)
+Unhaggle Inc.No office location
+REMOTE
+djangopython
+80 People Chatting
+
+JavaScript
+2 hours ago - user5348fh8y5
+KarelG: 2 hours agoFlying Gambit: 2 hours agoivarni: 2 hours agojacobian: 4 hours agoCaprica Six: 4 hours agoLoktar: 5 hours agoAbhishrek: 5 hours ago
+PHP
+2 hours ago - Félix Gagnon-Grenier
+Félix Gagnon-Grenier: 2 hours agoPaul Crovella: 2 hours agoAntono: 2 hours agokelunik: 2 hours agoWes: 2 hours agoLinus: 3 hours agobrzuchal: 3 hours ago
+Linked
+
+549
+If Python is interpreted, what are .pyc files?
+76
+Should I store generated code in source control
+23
+Why are main runnable Python scripts not compiled to pyc files like modules?
+Related
+
+663
+Should I add the Visual Studio .suo and .user files to source control?
+78
+Should I keep my project files under version control?
+2396
+Reset or revert a specific file to a specific revision using Git?
+855
+Git for beginners: The definitive practical guide
+215
+Which Eclipse files belong under version control?
+181
+How can I put a database under git (version control)?
+3471
+How do I force “git pull” to overwrite local files?
+17
+What to put under version control?
+9
+Should .class files be put under version control?
+311
+Using IPython notebooks under version control
+Hot Network Questions
+
+Why is it a bad idea to use Same Page Tool as a survey?
+Exceeding speed limit with Ebike, is battery effected?
+Word for low level noise among restless crowd, as sign of confusion or complaint?
+Why is there no `nand` instruction in modern CPUs?
+Is my head gasket cracked?
+Is there a word for a statement which is false but comfortable to believe in?
+A Six-Faced Puzzle
+Is it possible to make an alloy that melts at low temperatures and solidifies at high temperatures?
+Proving an alternate quadratic formula
+Move a single match to make this expression true
+Why would one aim off when navigating with a map and compass?
+What kind of art (if any) would be possible in a world without imagination?
+What advantages did Catholic missionaries to the Indians have over Protestant missionaries in old Oregon Country?
+Did NIST fudge this news story about absolute zero?
+The most outrageous (or ridiculous) conjectures in mathematics
+Is Central admin is there in Office 365 SharePoint online 2013 / 2016
+Where does command `rename` come from?
+Exit Code Golfing
+Do black people and white people use drugs at the same rate in the USA, but black people get arrested more often?
+Why does cout print "2 + 3 = 15" in this snippet of code?
+Which of the revisions of "Yesterday I went to the wedding of a daughter of my husband's brother." is grammatically correct?
+Print a word clock
+What role do neutrons play in an atom?
+If I buy a foreclosure at courthouse auction, am I in any way responsible for debt on the property?
+question feed
+about us tour help blog chat data legal privacy policy work here advertising info mobile contact us feedback
+TECHNOLOGY	LIFE / ARTS	CULTURE / RECREATION	SCIENCE	OTHER
+Stack Overflow
+Server Fault
+Super User
+Web Applications
+Ask Ubuntu
+Webmasters
+Game Development
+TeX - LaTeX
+Software Engineering
+Unix & Linux
+Ask Different (Apple)
+WordPress Development
+Geographic Information Systems
+Electrical Engineering
+Android Enthusiasts
+Information Security
+Database Administrators
+Drupal Answers
+SharePoint
+User Experience
+Mathematica
+Salesforce
+ExpressionEngine® Answers
+Cryptography
+Code Review
+Magento
+Signal Processing
+Raspberry Pi
+Programming Puzzles & Code Golf
+more (7)
+Photography
+Science Fiction & Fantasy
+Graphic Design
+Movies & TV
+Music: Practice & Theory
+Seasoned Advice (cooking)
+Home Improvement
+Personal Finance & Money
+Academia
+more (8)
+English Language & Usage
+Skeptics
+Mi Yodeya (Judaism)
+Travel
+Christianity
+English Language Learners
+Japanese Language
+Arqade (gaming)
+Bicycles
+Role-playing Games
+Anime & Manga
+Motor Vehicle Maintenance & Repair
+more (17)
+MathOverflow
+Mathematics
+Cross Validated (stats)
+Theoretical Computer Science
+Physics
+Chemistry
+Biology
+Computer Science
+Philosophy
+more (3)
+Meta Stack Exchange
+Stack Apps
+Area 51
+Stack Overflow Talent
+site design / logo © 2017 Stack Exchange Inc; user contributions licensed under cc by-sa 3.0 with attribution required
+rev 2017.1.19.24741
