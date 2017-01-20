@@ -9,3 +9,4 @@ You will need to open three separate terminal windows.
 2. Start redis server (assuming that you've added redis to PATH) in the second terminal window: `redis-server`
 3. Set the flask app, in cmd: `set FLASK_APP=mimicrnn` OR in powershell: `setx FLASK_APP mimicrnn`
 4. Run the flask app in the third terminal window: `flask run`
+5. Navigate to http://localhost:5000/ in your browser
