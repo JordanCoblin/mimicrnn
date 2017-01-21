@@ -2,7 +2,7 @@
 
 from flask import Flask, render_template
 from celery import Celery
-#import keras_rnn
+from mimicrnn.keras_rnn import run_rnn
 
 app = Flask(__name__)
 
@@ -34,7 +34,9 @@ def main():
 
 @celery.task()
 def train_rnn():
-    print('woah its printing :O')
+    #print('woah its printing :O')
+    run_rnn()
+
 
 if __name__ == "__main__":
 	app.run()

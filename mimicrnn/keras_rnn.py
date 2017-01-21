@@ -17,49 +17,7 @@ from keras.utils.data_utils import get_file
 import numpy as np
 import random
 import sys
-
-#path = get_file('nietzsche.txt', origin="https://s3.amazonaws.com/text-datasets/nietzsche.txt")
-path = 'superconductors.txt'
-text = open(path, encoding="utf-8").read().lower()
-#text.encode('utf-8', 'ignore')
-# \xc3\xa2\xe2\x82\xac\xe2\x84\xa2 -> bad unicode
-#print(text)
-print('corpus length:', len(text))
-
-chars = sorted(list(set(text)))
-print('total chars:', len(chars))
-char_indices = dict((c, i) for i, c in enumerate(chars))
-indices_char = dict((i, c) for i, c in enumerate(chars))
-
-# cut the text in semi-redundant sequences of maxlen characters
-maxlen = 40
-step = 3
-sentences = []
-next_chars = []
-for i in range(0, len(text) - maxlen, step):
-    sentences.append(text[i: i + maxlen])
-    next_chars.append(text[i + maxlen])
-print('nb sequences:', len(sentences))
-
-print('Vectorization...')
-X = np.zeros((len(sentences), maxlen, len(chars)), dtype=np.bool)
-y = np.zeros((len(sentences), len(chars)), dtype=np.bool)
-for i, sentence in enumerate(sentences):
-    for t, char in enumerate(sentence):
-        X[i, t, char_indices[char]] = 1
-    y[i, char_indices[next_chars[i]]] = 1
-
-
-# build the model: a single LSTM
-print('Build model...')
-model = Sequential()
-model.add(LSTM(128, input_shape=(maxlen, len(chars))))
-model.add(Dense(len(chars)))
-model.add(Activation('softmax'))
-
-optimizer = RMSprop(lr=0.01)
-model.compile(loss='categorical_crossentropy', optimizer=optimizer)
-
+import os
 
 def sample(preds, temperature=1.0):
     # helper function to sample an index from a probability array
@@ -70,37 +28,83 @@ def sample(preds, temperature=1.0):
     probas = np.random.multinomial(1, preds, 1)
     return np.argmax(probas)
 
-# train the model, output generated text after each iteration
-for iteration in range(1, 60):
-    print()
-    print('-' * 50)
-    print('Iteration', iteration)
-    model.fit(X, y, batch_size=128, nb_epoch=1)
+def run_rnn():
+    print('running rnn')
+    #path = get_file('nietzsche.txt', origin="https://s3.amazonaws.com/text-datasets/nietzsche.txt")
+    #dir = os.getcwd()
+    #path = os.path.join(dir, '/mimicrnn/superconductors.txt')
+    path = 'C:/Users/Jordan_2/documents/Programming/mimicrnn/mimicrnn/superconductors.txt'
+    text = open(path, encoding="utf-8").read().lower()
+    #text.encode('utf-8', 'ignore')
+    # \xc3\xa2\xe2\x82\xac\xe2\x84\xa2 -> bad unicode
+    #print(text)
+    print('corpus length:', len(text))
 
-    start_index = random.randint(0, len(text) - maxlen - 1)
+    chars = sorted(list(set(text)))
+    print('total chars:', len(chars))
+    char_indices = dict((c, i) for i, c in enumerate(chars))
+    indices_char = dict((i, c) for i, c in enumerate(chars))
 
-    for diversity in [0.2, 0.5, 1.0, 1.2]:
+    # cut the text in semi-redundant sequences of maxlen characters
+    maxlen = 40
+    step = 3
+    sentences = []
+    next_chars = []
+    for i in range(0, len(text) - maxlen, step):
+        sentences.append(text[i: i + maxlen])
+        next_chars.append(text[i + maxlen])
+    print('nb sequences:', len(sentences))
+
+    print('Vectorization...')
+    X = np.zeros((len(sentences), maxlen, len(chars)), dtype=np.bool)
+    y = np.zeros((len(sentences), len(chars)), dtype=np.bool)
+    for i, sentence in enumerate(sentences):
+        for t, char in enumerate(sentence):
+            X[i, t, char_indices[char]] = 1
+        y[i, char_indices[next_chars[i]]] = 1
+
+
+    # build the model: a single LSTM
+    print('Build model...')
+    model = Sequential()
+    model.add(LSTM(128, input_shape=(maxlen, len(chars))))
+    model.add(Dense(len(chars)))
+    model.add(Activation('softmax'))
+
+    optimizer = RMSprop(lr=0.01)
+    model.compile(loss='categorical_crossentropy', optimizer=optimizer)
+
+    # train the model, output generated text after each iteration
+    for iteration in range(1, 5):
         print()
-        print('----- diversity:', diversity)
+        print('-' * 50)
+        print('Iteration', iteration)
+        model.fit(X, y, batch_size=128, nb_epoch=1)
 
-        generated = ''
-        sentence = text[start_index: start_index + maxlen]
-        generated += sentence
-        print('----- Generating with seed: "' + sentence + '"')
-        sys.stdout.write(generated)
+        start_index = random.randint(0, len(text) - maxlen - 1)
 
-        for i in range(400):
-            x = np.zeros((1, maxlen, len(chars)))
-            for t, char in enumerate(sentence):
-                x[0, t, char_indices[char]] = 1.
+        for diversity in [0.2, 0.5, 1.0, 1.2]:
+            print()
+            print('----- diversity:', diversity)
 
-            preds = model.predict(x, verbose=0)[0]
-            next_index = sample(preds, diversity)
-            next_char = indices_char[next_index]
+            generated = ''
+            sentence = text[start_index: start_index + maxlen]
+            generated += sentence
+            print('----- Generating with seed: "' + sentence + '"')
+            sys.stdout.write(generated)
 
-            generated += next_char
-            sentence = sentence[1:] + next_char
+            for i in range(400):
+                x = np.zeros((1, maxlen, len(chars)))
+                for t, char in enumerate(sentence):
+                    x[0, t, char_indices[char]] = 1.
 
-            sys.stdout.write(next_char)
-            sys.stdout.flush()
-        print()
+                preds = model.predict(x, verbose=0)[0]
+                next_index = sample(preds, diversity)
+                next_char = indices_char[next_index]
+
+                generated += next_char
+                sentence = sentence[1:] + next_char
+
+                sys.stdout.write(next_char)
+                sys.stdout.flush()
+            print()

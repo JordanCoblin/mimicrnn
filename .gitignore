@@ -63,6 +63,7 @@ There are a great collection of gitignore files for almost all platforms. You ca
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
+mimicrnn/__pycache__/
 *.py[cod]
 *$py.class
 
@@ -121,6 +122,9 @@ docs/_build/
 target/
 shareedit
 answered Aug 20 '15 at 6:08
+
+# Added
+*.rdb
 
 svfat
 820318
